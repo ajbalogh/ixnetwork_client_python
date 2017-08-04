@@ -3,3 +3,6 @@
 dist
 build
 *.egg-info
+build.py
+setup.cfg
+setup.py

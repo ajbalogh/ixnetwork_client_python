@@ -323,10 +323,11 @@ class IxnHttp(object):
             child_meta_data = self._get_meta_data(url)
 
             if child_meta_data.add is True:
-                def create_operation(url=url, count=1):
-                    payload = []
-                    for i in range(0, count):
-                        payload.append({})
+                def create_operation(url=url, count=1, payload=None):
+                    if payload is None:
+                        payload = []
+                        for i in range(0, count):
+                            payload.append({})
                     response = result._ixnhttp.post(url, payload)
                     new_objects = []
                     for link in response.links:

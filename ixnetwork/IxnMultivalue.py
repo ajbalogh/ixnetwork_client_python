@@ -15,6 +15,15 @@ class IxnMultivalue(object):
         if self._multivalue is None:
             self._multivalue = IxnQuery(ixnhttp, self._multivalue_href) \
                 .node('multivalue', properties=['availablePatterns', 'count', 'format', 'pattern']) \
+                .node('singleValue', properties=['*']) \
+                .node('counter', properties=['*']) \
+                .node('alternate', properties=['*']) \
+                .node('random', properties=['*']) \
+                .node('repeatableRandom', properties=['*']) \
+                .node('valueList', properties=['*']) \
+                .node('string', properties=['*']) \
+                .node('custom', properties=['*']) \
+                .node('nest', properties=['*']) \
                 .go()
 
     @property
@@ -23,15 +32,10 @@ class IxnMultivalue(object):
         return self._multivalue.attributes.pattern.value
     
     def getSingleValue(self):
-        if self._singleValue is None:
-            self._singleValue = self._ixnhttp.get('%s/singleValue' % self._multivalue_href)    
+        if self._multivalue.pattern.value == 'singleValue':
+            return self._multivalue.singleValue.value.value
             
     def setSingleValue(self, value):
         """Changes the pattern to singleValue and sets the value"""
-        self._singleValue = value
-
-    def update(self):
-        payload = {
-            'value': self._singleValue
-        }
-        self._ixnhttp.post('%s/singleValue' % self._multivalue_href, payload)
+        self._ixnhttp._multivalue.create_singleValue({'value': value})
+        self._refresh()

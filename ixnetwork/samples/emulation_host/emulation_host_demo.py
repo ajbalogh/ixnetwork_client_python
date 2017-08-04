@@ -23,27 +23,37 @@ ixnhttp.current_session = ixnhttp.sessions()[0]
 print(ixnhttp.system_info)
 
 
-# load a json configuration
+# load a binary configuration
 config_mgmt = IxnConfigManagement(ixnhttp)
-config_filename = '%s/emulation-host-demo.json' % os.path.dirname(os.path.realpath(__file__))
-with open(config_filename, 'r') as fid:
-    json_config = json.loads(fid.read())
+config_filename = '%s/emulation-host-demo.ixncfg' % os.path.dirname(os.path.realpath(__file__))
+config_mgmt.load_config(config_filename, upload=True)
 
 
-# change the virtual port type to ethernet in the json config
-for vport in json_config['vport']:
-    vport['l1Config']['currentType'] = 'ethernet'
+# clear any hardware configuration
+query_result = ixnhttp.root.query \
+    .node('availableHardware') \
+    .node('chassis') \
+    .go()
+for chassis in query_result.availableHardware.chassis:
+    chassis.delete()
 
 
-# import the updated configuration
-config_mgmt.import_config(json_config)
+# get a list of vports and change the type to ethernet
+query_result = ixnhttp.root.query \
+    .node('vport', properties=['type', 'connectedTo']) \
+    .go()
+for vport in query_result.vport:
+    vport.operations.unassignports({'arg1': [vport.href], 'arg2': False})
+    vport.attributes.type.value = 'ethernet'
+    vport.attributes.connectedTo.value = 'null'
+    vport.update()
 
 
 # assign hardware ports to virtual ports
-# port_mgmt = IxnPortManagement(ixnhttp)
-# port_mgmt.map('PE2-6/5', '10.200.109.3', '1', '1') \
-#     .map('PE2-6/8', '10.200.109.3', '1', '2') \
-#     .apply()
+port_mgmt = IxnPortManagement(ixnhttp)
+port_mgmt.map('PE2-6/5', '10.200.109.3', '1', '1') \
+    .map('PE2-6/8', '10.200.109.3', '1', '2') \
+    .apply()
 
 
 # find igmp emulation host session(s) by vport_name and mac addresses

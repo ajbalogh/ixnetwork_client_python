@@ -69,7 +69,7 @@ setup(
         'samples/create/*.py',
         'samples/sessions/*.py',
         'samples/global/*.py',
-        'samples/emulation_host/*.py'
+        'samples/emulation_host/*.py',
         'samples/query/*.py'
         ]
     },
