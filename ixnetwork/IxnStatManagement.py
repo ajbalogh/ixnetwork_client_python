@@ -37,7 +37,7 @@ class IxnStatManagement(object):
             .node('view', properties=['caption', 'enabled'], where=[{'property': 'caption', 'regex': view_caption}]) \
             .node('page', properties=['isReady']) \
             .go()
-        if len(query_result.statistics.view) == 1 and query_result.statistics.view[0].page.attributes.isReady is True:
+        if len(query_result.statistics.view) == 1 and query_result.statistics.view[0].page.attributes.isReady.value is True:
             query_result = query_result.statistics.view[0].query \
                 .node('page', properties=['_columnCaptions', '_pageValues']) \
                 .go()
