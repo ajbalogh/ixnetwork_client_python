@@ -14,14 +14,22 @@ class IxnConfigManagement(object):
         """Create an empty configuration"""
         self._ixnhttp.root.operations.newconfig()
 
-    def load_config(self, filename, upload=False):
+    def load_config(self, filename, upload=False, remove_chassis=False):
         """Load a binary .ixncfg configuration into the test tool """
         filename_only = self._file_mgmt._get_filename(filename)
         if upload:
             self._file_mgmt.upload(filename)
         if len(self._file_mgmt.files(match=filename_only)) == 0:
             raise Exception('file not found on server')
-        return self._ixnhttp.root.operations.loadconfig({'arg1': filename_only})
+        self._ixnhttp.root.operations.loadconfig({'arg1': filename_only})
+        if remove_chassis is True:
+            query_result = ixnhttp.root.query \
+                .node('availableHardware') \
+                .node('chassis') \
+                .go()
+            for chassis in query_result.availableHardware.chassis:
+                chassis.delete()
+            
 
     def save_config(self, remote_filename, download=False, local_filename=None):
         """Save the test tool configuration as a binary .ixncfg """
