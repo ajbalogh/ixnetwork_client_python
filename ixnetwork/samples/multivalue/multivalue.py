@@ -25,7 +25,8 @@ ethernet = ixnhttp.root.create_topology().create_deviceGroup().create_ethernet()
 print(ethernet.attributes.mac.value)
 
 # construct an ethernet multivalue object
-if ethernet.attributes.mac.isMultivalue:
+if ethernet.attributes.mac.is_multivalue:
     multivalue = IxnMultivalue(ixnhttp, ethernet.attributes.mac.value)
-
+    print(multivalue.pattern)
+    multivalue.single_value = '00:00:de:ad:be:ef'
 
