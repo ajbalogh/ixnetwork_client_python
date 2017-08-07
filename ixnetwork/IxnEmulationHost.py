@@ -183,7 +183,7 @@ class IxnEmulationHost(object):
         expected_states = getattr(result, state_name)
         if isinstance(session_ids, str):
             session_index_start = (self._port_offset - 1) * self._sessions_per_port
-            session_index_stop = session_index_start + self._sessions_per_port - 1
+            session_index_stop = session_index_start + self._sessions_per_port
             for session_index in range(session_index_start, session_index_stop): 
                 if expected_states[session_index] != expected_state:
                     return False
