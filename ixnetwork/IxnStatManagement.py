@@ -39,14 +39,14 @@ class IxnStatManagement(object):
             .go()
         if len(query_result.statistics.view) == 1 and query_result.statistics.view[0].page.attributes.isReady.value is True:
             query_result = query_result.statistics.view[0].query \
-                .node('page', properties=['_columnCaptions', '_pageValues']) \
+                .node('page', properties=['columnCaptions', 'pageValues']) \
                 .go()
             page_result = []
             page_header = []
-            for caption in query_result.page.attributes._columnCaptions.value:
+            for caption in query_result.page.attributes.columnCaptions.value:
                 page_header.append(caption)
             page_result.append(page_header)            
-            for row in query_result.page.attributes._pageValues.value:
+            for row in query_result.page.attributes.pageValues.value:
                 page_result.append(row[0])
             return page_result
         else:

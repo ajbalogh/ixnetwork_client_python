@@ -70,6 +70,7 @@ setup(
         'samples/sessions/*.py',
         'samples/global/*.py',
         'samples/emulation_host/*.py',
+        'samples/emulation_host/*.ixncfg',
         'samples/query/*.py'
         ]
     },

@@ -23,7 +23,7 @@ class IxnConfigManagement(object):
             raise Exception('file not found on server')
         self._ixnhttp.root.operations.loadconfig({'arg1': filename_only})
         if remove_chassis is True:
-            query_result = ixnhttp.root.query \
+            query_result = self._ixnhttp.root.query \
                 .node('availableHardware') \
                 .node('chassis') \
                 .go()

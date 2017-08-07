@@ -7,7 +7,7 @@ from ixnetwork.samples.Config import Config
 from ixnetwork.IxnConfigManagement import IxnConfigManagement
 from ixnetwork.IxnHttp import IxnHttp
 from ixnetwork.IxnQuery import IxnQuery
-
+import time
 
 # get an IxnHttp instance using the samples Config object
 ixnhttp = Config.get_IxnHttp_instance()
@@ -40,3 +40,23 @@ query_result = IxnQuery(ixnhttp, '/') \
 print('One virtual port name')
 for vport in query_result.vport:
     print(vport.attributes.name.value)
+
+
+# get the port state
+def verify_port_state(port_state, timeout=70):
+    """Verify that all vport objects are at a certain state
+
+    :param: port_state: up | down | busy | versionMismatch
+    :param: timeout: timeout in seconds
+    :raises: Exception: if after timeout seconds all vport objects state property is not reached
+    """
+    start = int(time.time())
+
+    # setup the state query
+    state_query = IxnQuery(ixnhttp, '/') \
+        .node('vport', properties=['state'], where=[{'property': 'state', 'regex': '^(?!.*?up).*'}])
+
+    while len(state_query.go().vport) > 0:
+        if int(time.time()) - start > timeout:
+            raise Exception('all vport objects did not reach state up in %s seconds' % (timeout))
+        time.sleep(2)

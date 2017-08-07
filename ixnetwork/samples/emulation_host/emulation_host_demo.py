@@ -41,8 +41,8 @@ for vport in query_result.vport:
 
 # assign hardware ports to virtual ports
 port_mgmt = IxnPortManagement(ixnhttp)
-port_mgmt.map('PE2-6/5', '10.200.109.3', '1', '1') \
-    .map('PE2-6/8', '10.200.109.3', '1', '2') \
+port_mgmt.map('PE2-6/5', '10.200.109.21', '1', '3') \
+    .map('PE2-6/8', '10.200.109.21', '1', '4') \
     .apply()
 
 
