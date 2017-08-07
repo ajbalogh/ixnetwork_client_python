@@ -41,5 +41,5 @@ print(ipv4.session_ids)
 
 
 # wait for ipv4 and igmp emulation sessions to be in an up state
-ipv4.wait_until(IxnIpv4Emulation.STATE_UP, timeout=90)
+ipv4.wait_until(IxnIpv4Emulation.STATE_UP, timeout=10)
 
