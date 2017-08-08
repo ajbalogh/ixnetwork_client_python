@@ -29,8 +29,8 @@ w_topology.update()
 w_ipv4 = w_topology.create_deviceGroup().create_ethernet().create_ipv4()
 
 # change the address and gw multivalue
-w_ipv4.attributes.address.value.singleValue = '1.1.1.1'
-w_ipv4.attributes.gatewayIp.value.singleValue = '1.1.1.2'
+w_ipv4.attributes.address.value.single_value = '1.1.1.1'
+w_ipv4.attributes.gatewayIp.value.single_value = '1.1.1.2'
 
 # setup topology east
 e_topology = ixnhttp.root.create_topology()
@@ -40,5 +40,5 @@ e_topology.update()
 e_ipv4 = e_topology.create_deviceGroup().create_ethernet().create_ipv4()
 
 # change the address and gw multivalue
-e_ipv4.attributes.address.value.singleValue = '1.1.1.2'
-e_ipv4.attributes.gatewayIp.value.singleValue = '1.1.1.1'
+e_ipv4.attributes.address.value.single_value = '1.1.1.2'
+e_ipv4.attributes.gatewayIp.value.single_value = '1.1.1.1'

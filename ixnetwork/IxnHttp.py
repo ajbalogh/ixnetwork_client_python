@@ -10,14 +10,18 @@ any object in the hierarchy.
 
 
 import json
-try:import httplib
-except:import http.client as httplib
+try:
+    import httplib
+except:
+    import http.client as httplib
 import os
 import ssl
-try:import urllib2
-except:import urllib.request as urllib2
+try:
+    import urllib2
+except:
+    import urllib.request as urllib2
 import time
-from .IxnQuery import IxnQuery
+from ixnetwork.IxnQuery import IxnQuery
 from .IxnDynAttr import IxnDynAttr
 
 
@@ -143,7 +147,7 @@ class IxnHttp(object):
             else:
                 url += "&"
             url += "links=true"
-        return self._generate_ixn_object(self._send_recv('GET', url, fid=fid))
+        return self._generate_ixn_object(self._send_recv('GET', url, payload=None, fid=fid))
     
     def post(self, url, payload=None, fid=None, file_content=None):
         response = self._send_recv('POST', url, payload, fid, file_content)
@@ -163,20 +167,24 @@ class IxnHttp(object):
     def _send_recv(self, method, url, payload=None, fid=None, file_content=None):
         if url.find('/api/v1/sessions') == -1 and self.current_session is not None:
             url = "/api/v1/sessions/%s/ixnetwork%s" % (self.current_session.id, url)
-        headers = self._headers
+        headers = self._headers.copy()
         if self.trace:
             print('%s %s %s' % (int(time.time()), method, url))
         if payload is not None:
             headers['Content-Type'] = 'application/json'
-            self._connection.request(method, url, body=json.dumps(payload), headers=headers)
+            self._connection.request(method, url, json.dumps(payload), headers)
         elif method == 'POST' and fid is not None:
             headers['Content-Type'] = 'application/octet-stream'
-            self._connection.request(method, url, body=fid, headers=headers)
+            if fid.__class__.__name__ == 'BufferedReader':
+                headers['Content-Length'] = os.fstat(fid.raw.fileno()).st_size
+                self._connection.request(method, url, fid.raw, headers)
+            else:                            
+                self._connection.request(method, url, fid, headers)
         elif method == 'POST' and file_content is not None:
             headers['Content-Type'] = 'application/octet-stream'
-            self._connection.request(method, url, body=json.dumps(file_content), headers=headers)
+            self._connection.request(method, url, json.dumps(file_content), headers)
         else:
-            self._connection.request(method, url, headers=headers)
+            self._connection.request(method, url, None, headers)
 
         response = self._connection.getresponse()
         if str(response.status).startswith('2') is False:

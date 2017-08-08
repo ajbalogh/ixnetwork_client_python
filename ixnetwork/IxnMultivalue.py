@@ -130,6 +130,8 @@ class IxnMultivalue(object):
     @single_value.setter
     def single_value(self, value):
         """Changes the pattern to singleValue and sets the value"""
+        if self._multivalue is None:
+            self._refresh()
         self._multivalue.create_singleValue(payload={'value': value})
         self._refresh()
 
@@ -144,6 +146,8 @@ class IxnMultivalue(object):
 
     def set_counter(self, start=None, step=None, direction=None):
         """Changes the pattern to counter and sets the values"""
+        if self._multivalue is None:
+            self._refresh()
         if self.pattern is not 'counter':
             self._multivalue.create_counter()
             self._refresh()

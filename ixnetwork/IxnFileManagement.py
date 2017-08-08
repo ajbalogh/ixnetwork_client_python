@@ -48,8 +48,8 @@ class IxnFileManagement(object):
     def _get_filename(self, filename):
         return filename.replace('\\', '/').split('/').pop()
 
-    def _add_href(self, file):
-        file.href = '/api/v1/sessions/%s/ixnetwork/files/%s' % (self._ixnhttp.current_session.id, file.name)
-        return file
+    def _add_href(self, file_object):
+        file_object.href = '/api/v1/sessions/%s/ixnetwork/files/%s' % (self._ixnhttp.current_session.id, file_object.name)
+        return file_object
 
 
