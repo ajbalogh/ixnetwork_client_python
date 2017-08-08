@@ -26,9 +26,10 @@ w_topology.attributes.vports.value = [vports[0].href]
 w_topology.attributes.name.value = 'West'
 w_topology.update()
 w_ipv4 = w_topology.create_deviceGroup().create_ethernet().create_ipv4()
-w_ipv4.attributes.address.value = '1.1.1.1'
-w_ipv4.update()
-w_bgpIpv4Peer = w_ipv4.create_bgpIpv4Peer()
+
+# change the address and gw multivalue
+w_ipv4.attributes.address.value.singleValue = '1.1.1.1'
+w_ipv4.attributes.gatewayIp.value.singleValue = '1.1.1.2'
 
 # setup topology east
 e_topology = ixnhttp.root.create_topology()
@@ -36,5 +37,7 @@ e_topology.attributes.vports.value = [vports[1].href]
 e_topology.attributes.name.value = 'East'
 e_topology.update()
 e_ipv4 = e_topology.create_deviceGroup().create_ethernet().create_ipv4()
-e_ipv4.attributes.address.value = '1.1.1.2'
-e_ipv4.update()
+
+# change the address and gw multivalue
+e_ipv4.attributes.address.value.singleValue = '1.1.1.2'
+e_ipv4.attributes.gatewayIp.value.singleValue = '1.1.1.1'
