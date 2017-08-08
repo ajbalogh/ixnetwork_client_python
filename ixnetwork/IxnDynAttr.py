@@ -1,17 +1,20 @@
+"""Encapsulates an attribute
+
+also includes IxnMultivalue
 """
-Encapsulates an attribute
-"""
+from ixnetwork.IxnMultivalue import IxnMultivalue
+
 
 class IxnDynAttr(object):
     """An internal class that exposes SDM attributes using SDM meta data. """
     
     def __init__(self, ixnhttp, meta_data, value):
         self._meta_data = meta_data
-        self._value = value
         self._dirty = False
         if self._meta_data.type.name == 'href' and any('multivalue' in href for href in self._meta_data.type.hrefs):
+            self._value = IxnMultivalue(ixnhttp, value)
             def session_id_operation(match, port_count=None, port_offset=None):
-                multivalue = ixnhttp.get('%s?includes=count,values' % self._value)
+                multivalue = ixnhttp.get('%s?includes=count,values' % self._value.href)
                 session_ids = []
                 start_index = int(0)
                 end_index = int(multivalue.count)
@@ -26,6 +29,8 @@ class IxnDynAttr(object):
                     session_id += 1
                 return session_ids
             setattr(self, 'get_session_ids', session_id_operation)
+        else:
+            self._value = value
 
     @property
     def name(self):
@@ -37,7 +42,7 @@ class IxnDynAttr(object):
     
     @value.setter
     def value(self, value):
-        if self._meta_data.readOnly is True:
+        if self._meta_data.readOnly is True or isinstance(self._value, IxnMultivalue):
             raise Exception('%s is read only and cannot be set' % (self._meta_data.name))
         if self._value != value:
             self._value = value

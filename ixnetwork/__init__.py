@@ -6,4 +6,5 @@ from .IxnFileManagement import IxnFileManagement
 from .IxnConfigManagement import IxnConfigManagement
 from .IxnPortManagement import IxnPortManagement
 from .IxnStatManagement import IxnStatManagement
+from .IxnMultivalue import IxnMultivalue
 from .IxnEmulationHosts import *
