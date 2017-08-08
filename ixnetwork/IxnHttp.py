@@ -285,7 +285,7 @@ class IxnHttp(object):
             def update_operation():
                 updates = {}
                 for dyn_attr in self._get_dyn_attrs(result):
-                    if dyn_attr.is_dirty is True:
+                    if dyn_attr.is_dirty is True and dyn_attr.is_multivalue is False:
                         updates[dyn_attr.name] = dyn_attr.value
                 if len(updates.keys()) > 0:
                     result._ixnhttp.patch(result.href, updates)

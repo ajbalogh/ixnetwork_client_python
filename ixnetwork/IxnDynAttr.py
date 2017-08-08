@@ -58,7 +58,7 @@ class IxnDynAttr(object):
 
     @property
     def is_multivalue(self):
-        return self._meta_data.type.name == 'href' and any('multivalue' in href for href in self._meta_data.type.hrefs)
+        return isinstance(self._value, IxnMultivalue)
 
     @property
     def type_info(self):
