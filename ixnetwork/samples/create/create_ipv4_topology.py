@@ -21,6 +21,7 @@ config_mgmt.new_config()
 vports = ixnhttp.root.create_vport(count=2)
 
 # setup topology west
+
 w_topology = ixnhttp.root.create_topology()
 w_topology.attributes.vports.value = [vports[0].href]
 w_topology.attributes.name.value = 'West'
