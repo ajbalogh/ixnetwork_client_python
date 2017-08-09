@@ -123,8 +123,8 @@ class IxnMultivalue(object):
 
         :returns: str or None: A valid singlevalue or None if the pattern is not singleValue
         """
-        if self._multivalue.pattern.value == 'singleValue':
-            return self._multivalue.singleValue.value.value
+        if self._multivalue.attributes.pattern.value == IxnMultivalue.SINGLE_VALUE:
+            return self._multivalue.singleValue.attributes.value.value
         return None
 
     @single_value.setter
@@ -159,3 +159,30 @@ class IxnMultivalue(object):
             self._multivalue.counter.direction.value = direction
         self._multivalue.counter.update()
         self._refresh()
+
+    def _refresh_check(self, expected_pattern):
+        if self._multivalue is None:
+            self._refresh()
+        if self.pattern is not 'counter':
+            self._multivalue.create_counter()
+            self._refresh()
+
+    @property
+    def value_list(self):
+        """Get the value list
+
+        :returns: str or None: A valid singlevalue or None if the pattern is not singleValue
+        """
+        if self._multivalue.attributes.pattern.value == IxnMultivalue.VALUE_LIST:
+            return self._multivalue.valueList.attributes.values.value
+        return None
+
+    @value_list.setter
+    def value_list(self, values):
+        if self._multivalue is None:
+            self._refresh()
+        if self.pattern != IxnMultivalue.VALUE_LIST:
+            self._multivalue.create_valueList()
+            self._refresh()
+        self._multivalue.valueList.attributes.values.value = values
+        self._multivalue.valueList.update()
