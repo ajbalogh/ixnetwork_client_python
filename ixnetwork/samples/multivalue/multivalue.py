@@ -21,17 +21,21 @@ config_mgmt.new_config()
 # create an ethernet emulation host
 ethernet = ixnhttp.root.create_topology().create_deviceGroup().create_ethernet()
 
-# the ethernet mac multivalue object
-if ethernet.attributes.mac.is_multivalue:
-    # counter
-    ethernet.attributes.mac.value.dump()
+# ethernet mac singleValue
+ethernet.attributes.mac.value.single_value = '00:00:de:ad:be:ef'
+print(ethernet.attributes.mac.value.single_value)
+ethernet.attributes.mac.value.dump()
 
-    # singleValue
-    ethernet.attributes.mac.value.single_value = '00:00:de:ad:be:ef'
-    print(ethernet.attributes.mac.value.single_value)
-    ethernet.attributes.mac.value.dump()
+# ethernet mac valueList
+ethernet.attributes.mac.value.value_list = ['00:00:de:ad:be:ef', '00:00:fa:ce:fa:ce']
+print(ethernet.attributes.mac.value.value_list)
+ethernet.attributes.mac.value.dump()
 
-    # valueList
-    ethernet.attributes.mac.value.value_list = ['00:00:de:ad:be:ef', '00:00:fa:ce:fa:ce']
-    print(ethernet.attributes.mac.value.value_list)
-    ethernet.attributes.mac.value.dump()
+# ethernet enable vlans
+ethernet.attributes.enableVlans.value.single_value = 'true'
+
+# get the vlan emulation host
+vlan = ethernet.query.node('vlan', properties=['vlanId', 'priority', 'tpid']).go().vlan[0]
+
+# vlan vlanId singleValue
+vlan.attributes.vlanId.value.single_value = '6'

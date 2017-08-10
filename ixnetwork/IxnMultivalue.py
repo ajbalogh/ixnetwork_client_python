@@ -132,8 +132,12 @@ class IxnMultivalue(object):
         """Changes the pattern to singleValue and sets the value"""
         if self._multivalue is None:
             self._refresh()
-        self._multivalue.create_singleValue(payload={'value': value})
-        self._refresh()
+        if self.pattern == IxnMultivalue.SINGLE_VALUE:
+            self._multivalue.singleValue.attributes.value.value = value
+            self._multivalue.singleValue.update()
+        else:
+            self._multivalue.create_singleValue(payload={'value': value})
+            self._refresh()
 
     def get_counter(self):
         """Get the counter variables
@@ -148,15 +152,15 @@ class IxnMultivalue(object):
         """Changes the pattern to counter and sets the values"""
         if self._multivalue is None:
             self._refresh()
-        if self.pattern is not 'counter':
+        if self.pattern != IxnMultivalue.COUNTER:
             self._multivalue.create_counter()
             self._refresh()
         if start is not None:
-            self._multivalue.counter.start.value = start
+            self._multivalue.counter.attributes.start.value = start
         if step is not None:
-            self._multivalue.counter.start.value = step
+            self._multivalue.counter.attribues.start.value = step
         if direction is not None:
-            self._multivalue.counter.direction.value = direction
+            self._multivalue.counter.attributes.direction.value = direction
         self._multivalue.counter.update()
         self._refresh()
 
