@@ -25,7 +25,7 @@ class Config(object):
     TRACE_REST_CALLS = False
 
     @staticmethod    
-    def get_IxnHttp_instance(use_gui=None, ip_address=None, rest_port=None):
+    def get_IxnHttp_instance(use_gui=None, ip_address=None, rest_port=None, username=None, password=None):
         """Get an instance of an IxnHttp class using the static class variables
         
         :param use_gui: override the static class USE_IXNETWORK_GUI
@@ -46,7 +46,8 @@ class Config(object):
         if Config.USE_IXNETWORK_GUI:
             ixnhttp.current_session = ixnhttp.sessions()[0]
         else:
-            ixnhttp = ixnhttp.create_session()
+            ixnhttp.auth(username, password)
+            ixnhttp.create_session()
         ixnhttp.trace = Config.TRACE_REST_CALLS
         return ixnhttp
 
