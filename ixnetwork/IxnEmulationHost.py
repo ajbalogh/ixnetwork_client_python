@@ -1,7 +1,7 @@
 """ Base class for auto generated NGPF emulation hosts
 """
 
-
+from ixnetwork.IxnQuery import IxnQuery
 import time
 
 
@@ -14,7 +14,7 @@ class IxnEmulationHost(object):
         self._sessions_per_port = None
 
     def _get_topology(self, vport_name):
-        vport_query_result = self._ixnhttp.root.query.clear() \
+        vport_query_result = IxnQuery(self._ixnhttp, '/') \
             .node('vport', properties=['name'], where=[{'property': 'name', 'regex': vport_name}]) \
             .go()
         if len(vport_query_result.vport) == 1:
@@ -44,7 +44,8 @@ class IxnEmulationHost(object):
         if vport_name is not None:
             start_host = self._get_topology(vport_name)
         elif parent_host is not None:
-            start_host = parent_host
+            start_host = IxnQuery(self._ixnhttp, list(parent_host.session_ids)[0]).go()
+            parent_session_ids = parent_host.session_ids
         else:
             raise Exception('A vport_name or parent_host is required')
         start_host.query.clear()
@@ -65,6 +66,13 @@ class IxnEmulationHost(object):
         hosts = []
         self._get_host_from_query_result(host_names, host_name_to_get, host_query_result, hosts)
         
+        if parent_host is not None:
+            for host in hosts:
+                for key in parent_session_ids:
+                    if host.href.startswith(key):
+                        self.session_ids[host.href] = {'name': host.attributes.name.value, 'session_ids': parent_session_ids[key]['session_ids']}
+            return
+
         for host in hosts:
             self.session_ids[host.href] = {'name': host.attributes.name.value, 'session_ids': []}
             if len(match_properties.keys()) == 0:
@@ -93,7 +101,7 @@ class IxnEmulationHost(object):
                     self.session_ids[key]['session_ids'] = None
                 # else:
                 #     self.session_ids[key] = self._session_ids_to_range(self.session_ids[key])
-        
+
         return self
 
     def _session_ids_to_range(self, session_ids):

@@ -22,7 +22,6 @@ except:
     import urllib.request as urllib2
 import time
 from ixnetwork.IxnQuery import IxnQuery
-from .IxnDynAttr import IxnDynAttr
 
 
 class IxnHttp(object):
@@ -163,6 +162,20 @@ class IxnHttp(object):
 
     def help(self, url):
         return self._send_recv('OPTIONS', url)
+
+    def _get_meta_data(self, href):
+        pieces = href.split('/')
+        meta_url = '/'.join(pieces[0:5])
+        for i in range(5, len(pieces)):
+            piece = pieces[i]
+            if len(piece) > 0 and piece.isdigit() is False:
+                meta_url = '%s/%s' % (meta_url, piece)
+        if meta_url in IxnHttp._meta_data:
+            meta_data = IxnHttp._meta_data[meta_url]
+        else:
+            meta_data = self.help(meta_url).custom
+            IxnHttp._meta_data[meta_url] = meta_data
+        return meta_data
         
     def _send_recv(self, method, url, payload=None, fid=None, file_content=None):
         if url.find('/api/v1/sessions') == -1 and self.current_session is not None:

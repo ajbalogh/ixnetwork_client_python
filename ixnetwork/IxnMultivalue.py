@@ -1,4 +1,3 @@
-from ixnetwork.IxnQuery import IxnQuery
 """
 Encapsulates a multivalue
 """
@@ -22,6 +21,7 @@ class IxnMultivalue(object):
         self._multivalue = None
 
     def _refresh(self):
+        from ixnetwork.IxnQuery import IxnQuery
         self._multivalue = IxnQuery(self._ixnhttp, self._multivalue_href) \
             .node('multivalue', properties=['availablePatterns', 'count', 'format', 'pattern', 'source']) \
             .node('singleValue', properties=['*']) \
@@ -139,12 +139,34 @@ class IxnMultivalue(object):
             self._multivalue.create_singleValue(payload={'value': value})
             self._refresh()
 
+    @property
+    def alternate(self):
+        """Get the alternate value
+
+        :returns: str or None: A valid alternate value or None if the pattern is not alatenate
+        """
+        if self._multivalue.attributes.pattern.value == IxnMultivalue.ALTERNATE:
+            return self._multivalue.alternate.attributes.value.value
+        return None
+
+    @single_value.setter
+    def alternate(self, value):
+        """Changes the pattern to alternate and sets the value"""
+        if self._multivalue is None:
+            self._refresh()
+        if self.pattern == IxnMultivalue.ALTERNATE:
+            self._multivalue.alternate.attributes.value.value = value
+            self._multivalue.alternate.update()
+        else:
+            self._multivalue.create_alternate(payload={'value': value})
+            self._refresh()
+
     def get_counter(self):
         """Get the counter variables
 
         :returns: counter object or None: A valid counter object or None if the pattern is not counter
         """
-        if self._multivalue.pattern.value == 'counter':
+        if self._multivalue.pattern.value == IxnMultivalue.COUNTER:
             return self._multivalue.counter
         return None
 
@@ -190,3 +212,38 @@ class IxnMultivalue(object):
             self._refresh()
         self._multivalue.valueList.attributes.values.value = values
         self._multivalue.valueList.update()
+
+    def set_random(self):
+        """Set the multivalue pattern to random."""
+        if self._multivalue is None:
+            self._refresh()
+        if self.pattern != IxnMultivalue.RANDOM:
+            self._multivalue.create_random()
+            self._refresh()
+
+    def set_repeatable_random(self, count=None, fixed=None, mask=None, seed=None):
+        """Changes the pattern to counter and sets the values"""
+        if self._multivalue is None:
+            self._refresh()
+        if self.pattern != IxnMultivalue.REPEATABLE_RANDOM:
+            self._multivalue.create_repeatableRandom()
+            self._refresh()
+        if count is not None:
+            self._multivalue.repeatableRandom.attributes.count.value = count
+        if fixed is not None:
+            self._multivalue.repeatableRandom.attribues.fixed.value = fixed
+        if mask is not None:
+            self._multivalue.repeatableRandom.attributes.mask.value = mask
+        if seed is not None:
+            self._multivalue.repeatableRandom.attributes.seed.value = seed
+        self._multivalue.repeatableRandom.update()
+        self._refresh()
+
+    def get_repeatable_random(self):
+        """Get the repeatableRandom variables
+
+        :returns: repeatableRandom object or None: A valid repetableRandom object or None if the pattern is not repetableRandom
+        """
+        if self._multivalue.pattern.value == IxnMultivalue.REPEATABLE_RANDOM:
+            return self._multivalue.repeatableRandom
+        return None

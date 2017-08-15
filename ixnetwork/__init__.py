@@ -1,5 +1,6 @@
-from .IxnHttp import IxnHttp
 from .IxnQuery import IxnQuery
+from .IxnHttp import IxnHttp
+from .IxnObject import IxnObject
 from .IxnDynAttr import IxnDynAttr
 from .IxnEmulationHost import IxnEmulationHost
 from .IxnFileManagement import IxnFileManagement

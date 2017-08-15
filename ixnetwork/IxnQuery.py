@@ -8,6 +8,7 @@ Each object has .attributes, .operations and an update/delete method depending o
 Attributes are returned by specifying them in the properties list of the node.
 The properties list supports regex so if you want all attributes returned specify properties=['*'].
 """
+from ixnetwork.IxnObject import IxnObject
 
 
 class IxnQuery(object):
@@ -95,9 +96,13 @@ class IxnQuery(object):
         """
         async_response = self._ixnhttp.post('/operations/query', self._query)
         if async_response.state == 'SUCCESS':
-            start = async_response.result[0]
-            self._ixnhttp._generate_ixn_object(start)
-            return start
+            if isinstance(async_response.result[0], list):
+                ixnobjects = []
+                for item in async_response.result[0]:
+                    ixnobjects.append(IxnObject(self._ixnhttp, item))
+                return ixnobjects
+            else:
+                return IxnObject(self._ixnhttp, async_response.result[0])
         else:
             return None
 
