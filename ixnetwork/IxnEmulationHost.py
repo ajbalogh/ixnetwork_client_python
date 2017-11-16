@@ -13,6 +13,19 @@ class IxnEmulationHost(object):
         self._port_count = None
         self._sessions_per_port = None
 
+    @property
+    def hosts(self):
+        emulation_hosts = []
+        for key in self.session_ids.keys():
+            class_name = None
+            for piece in key.split('/')[::-1]:
+                if piece.isdigit() is False:
+                    class_name = piece
+                    break
+            emulation_host = IxnQuery(self._ixnhttp, key).node(class_name, properties=['*']).go()
+            emulation_hosts.append(emulation_host)
+        return emulation_hosts
+
     def _get_topology(self, vport_name):
         vport_query_result = IxnQuery(self._ixnhttp, '/') \
             .node('vport', properties=['name'], where=[{'property': 'name', 'regex': vport_name}]) \

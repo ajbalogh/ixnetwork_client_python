@@ -149,7 +149,7 @@ class IxnMultivalue(object):
             return self._multivalue.alternate.attributes.value.value
         return None
 
-    @single_value.setter
+    @alternate.setter
     def alternate(self, value):
         """Changes the pattern to alternate and sets the value"""
         if self._multivalue is None:
@@ -180,7 +180,7 @@ class IxnMultivalue(object):
         if start is not None:
             self._multivalue.counter.attributes.start.value = start
         if step is not None:
-            self._multivalue.counter.attribues.start.value = step
+            self._multivalue.counter.attributes.start.value = step
         if direction is not None:
             self._multivalue.counter.attributes.direction.value = direction
         self._multivalue.counter.update()

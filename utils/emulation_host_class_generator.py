@@ -1,6 +1,11 @@
 import StringIO
+import sys
 import os
-from ixnetwork import *
+path = os.path.realpath(__file__)
+sys.path.insert(0, '%s/..' % os.path.dirname(os.path.abspath(__file__)))
+from ixnetwork.IxnHttp import IxnHttp
+from ixnetwork.IxnQuery import IxnQuery
+from ixnetwork.IxnConfigManagement import IxnConfigManagement
 
 
 def process_node(ixnhttp, parent_href, metadata, classes):
@@ -109,7 +114,7 @@ def process_query_result(ixnhttp, query_result, classes):
         return
     metadata = ixnhttp.help(query_result.href)
     for child in metadata.custom.children:
-        if child.name in ['port', 'item'] or hasattr(query_result, child.name) is False:
+        if child.name in ['port', 'item', 'connector', 'tag'] or hasattr(query_result, child.name) is False:
             continue
         attr = getattr(query_result, child.name)
         if isinstance(attr, list) is True:
@@ -167,7 +172,7 @@ for class_path in class_paths:
         except Exception as e:
             print(e.message)
 
-    query_result = IxnQuery(ixnhttp, href).node('.*', properties=['*']).go()
+    query_result = IxnQuery(ixnhttp, '/topology/1').node('.*', properties=['*']).go()
     process_query_result(ixnhttp, query_result, classes)
 
 
