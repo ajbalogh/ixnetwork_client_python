@@ -180,7 +180,7 @@ class IxnMultivalue(object):
         if start is not None:
             self._multivalue.counter.attributes.start.value = start
         if step is not None:
-            self._multivalue.counter.attributes.start.value = step
+            self._multivalue.counter.attributes.step.value = step
         if direction is not None:
             self._multivalue.counter.attributes.direction.value = direction
         self._multivalue.counter.update()

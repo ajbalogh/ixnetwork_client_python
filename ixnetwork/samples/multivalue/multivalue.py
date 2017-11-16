@@ -39,3 +39,13 @@ vlan = ethernet.query.node('vlan', properties=['vlanId', 'priority', 'tpid']).go
 
 # vlan vlanId singleValue
 vlan.attributes.vlanId.value.single_value = '6'
+vlan.attributes.vlanId.value.dump()
+
+# vlan vlanId increment counter
+vlan.attributes.vlanId.value.set_counter('100', '1', 'increment')
+vlan.attributes.vlanId.value.dump()
+
+# vlan vlanId decrement counter
+vlan.attributes.vlanId.value.set_counter('90', '1', 'decrement')
+vlan.attributes.vlanId.value.dump()
+
