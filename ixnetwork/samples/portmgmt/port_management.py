@@ -16,7 +16,7 @@ ixnhttp.current_session = ixnhttp.sessions()[0]
 IxnConfigManagement(ixnhttp).new_config()
 
 # add 2 vports
-vports = ixnhttp.root.create_vport(count=2)
+vports = ixnhttp.root.create_child('vport', count=2)
 
 # map 2 vports to previously created vports
 chassis_ip = '10.200.109.3'

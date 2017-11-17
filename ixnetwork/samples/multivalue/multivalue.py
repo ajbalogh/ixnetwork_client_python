@@ -19,7 +19,7 @@ config_mgmt = IxnConfigManagement(ixnhttp)
 config_mgmt.new_config()
 
 # create an ethernet emulation host
-ethernet = ixnhttp.root.create_topology().create_deviceGroup().create_ethernet()
+ethernet = ixnhttp.root.create_child('topology').create_child('deviceGroup').create_child('ethernet')
 
 # ethernet mac singleValue
 ethernet.attributes.mac.value.single_value = '00:00:de:ad:be:ef'

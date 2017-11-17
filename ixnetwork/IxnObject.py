@@ -15,7 +15,7 @@ class IxnObject(object):
         meta_data = self._ixnhttp._get_meta_data(query_result.href)
         self._add_attributes(meta_data, query_result)
         self._add_operations(meta_data, query_result)
-        self._add_child_creates(meta_data, query_result)
+        # self._add_child_creates(meta_data, query_result)
         self._process_child_instances(meta_data, query_result)
 
     def _get_dyn_attrs(self):
@@ -58,6 +58,7 @@ class IxnObject(object):
                         updates[dyn_attr.name] = dyn_attr.value
                 if len(updates.keys()) > 0:
                     self._ixnhttp.patch(self.href, updates)
+                    self.refresh()
             update_operation.__doc__ = 'Update this %s object excluding multivalues which are handled immediately by the IxnMultivalue class' % (meta_data.name)
             setattr(self, 'update', update_operation)
             
@@ -67,7 +68,7 @@ class IxnObject(object):
                 dyn_attrs = self._get_dyn_attrs()
                 for dyn_attr in dyn_attrs:
                     includes.append(dyn_attr.name)
-                url = '%s?includes=%s' % (self.href, ', '.join(includes))
+                url = '%s?includes=%s' % (self.href, ','.join(includes))
                 refreshed_attributes = self._ixnhttp._send_recv('GET', url)
                 for dyn_attr in dyn_attrs:
                     dyn_attr._value = getattr(refreshed_attributes, dyn_attr.name)
@@ -84,6 +85,27 @@ class IxnObject(object):
                 return self._ixnhttp.post(url, payload)
             setattr(self.operations, operation_name, method_operation)
             getattr(self.operations, operation_name).__doc__ = operation.description
+
+        if len(meta_data.children) > 0:
+            def _create_child(child_name, count=1, payload=None):
+                if payload is None:
+                    payload = []
+                    for i in range(0, count):
+                        payload.append({})
+                full_url = '%s/%s' % (self.href, child_name)
+                full_url = full_url.replace('//', '/')
+                response = self._ixnhttp.post(full_url, payload)
+                new_objects = []
+                for link in response.links:
+                    new_object = self._ixnhttp.get(link.href)
+                    setattr(new_object, 'href', link.href)
+                    new_objects.append(IxnObject(self._ixnhttp, new_object))
+                if len(new_objects) == 1:
+                    return new_objects[0]
+                else:
+                    return new_objects
+            _create_child.__doc__ = 'Create a child object under this %s object' % (meta_data.name)
+            setattr(self, 'create_child', _create_child)
     
     def _add_child_creates(self, meta_data, result):
         for child in meta_data.children:

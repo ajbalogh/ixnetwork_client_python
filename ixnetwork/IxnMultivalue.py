@@ -136,7 +136,7 @@ class IxnMultivalue(object):
             self._multivalue.singleValue.attributes.value.value = value
             self._multivalue.singleValue.update()
         else:
-            self._multivalue.create_singleValue(payload={'value': value})
+            self._multivalue.create_child('singleValue', payload={'value': value})
             self._refresh()
 
     @property
@@ -175,7 +175,7 @@ class IxnMultivalue(object):
         if self._multivalue is None:
             self._refresh()
         if self.pattern != IxnMultivalue.COUNTER:
-            self._multivalue.create_counter()
+            self._multivalue.create_child('counter')
             self._refresh()
         if start is not None:
             self._multivalue.counter.attributes.start.value = start
@@ -190,7 +190,7 @@ class IxnMultivalue(object):
         if self._multivalue is None:
             self._refresh()
         if self.pattern is not 'counter':
-            self._multivalue.create_counter()
+            self._multivalue.create_child('counter')
             self._refresh()
 
     @property
@@ -208,7 +208,7 @@ class IxnMultivalue(object):
         if self._multivalue is None:
             self._refresh()
         if self.pattern != IxnMultivalue.VALUE_LIST:
-            self._multivalue.create_valueList()
+            self._multivalue.create_child('valueList')
             self._refresh()
         self._multivalue.valueList.attributes.values.value = values
         self._multivalue.valueList.update()
@@ -218,7 +218,7 @@ class IxnMultivalue(object):
         if self._multivalue is None:
             self._refresh()
         if self.pattern != IxnMultivalue.RANDOM:
-            self._multivalue.create_random()
+            self._multivalue.create_child('random')
             self._refresh()
 
     def set_repeatable_random(self, count=None, fixed=None, mask=None, seed=None):
@@ -226,7 +226,7 @@ class IxnMultivalue(object):
         if self._multivalue is None:
             self._refresh()
         if self.pattern != IxnMultivalue.REPEATABLE_RANDOM:
-            self._multivalue.create_repeatableRandom()
+            self._multivalue.create_child('repeatableRandom')
             self._refresh()
         if count is not None:
             self._multivalue.repeatableRandom.attributes.count.value = count

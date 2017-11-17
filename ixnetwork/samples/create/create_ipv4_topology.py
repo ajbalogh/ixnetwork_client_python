@@ -18,25 +18,25 @@ config_mgmt = IxnConfigManagement(ixnhttp)
 config_mgmt.new_config()
 
 # create two virtual ports
-vports = ixnhttp.root.create_vport(count=2)
+vports = ixnhttp.root.create_child('vport', count=2)
 
 # setup topology west
-w_topology = ixnhttp.root.create_topology()
+w_topology = ixnhttp.root.create_child('topology')
 w_topology.attributes.vports.value = [vports[0].href]
 w_topology.attributes.name.value = 'West'
 w_topology.update()
-w_ipv4 = w_topology.create_deviceGroup().create_ethernet().create_ipv4()
+w_ipv4 = w_topology.create_child('deviceGroup').create_child('ethernet').create_child('ipv4')
 
 # change the address and gw multivalue
 w_ipv4.attributes.address.value.single_value = '1.1.1.1'
 w_ipv4.attributes.gatewayIp.value.single_value = '1.1.1.2'
 
 # setup topology east
-e_topology = ixnhttp.root.create_topology()
+e_topology = ixnhttp.root.create_child('topology')
 e_topology.attributes.vports.value = [vports[1].href]
 e_topology.attributes.name.value = 'East'
 e_topology.update()
-e_ipv4 = e_topology.create_deviceGroup().create_ethernet().create_ipv4()
+e_ipv4 = e_topology.create_child('deviceGroup').create_child('ethernet').create_child('ipv4')
 
 # change the address and gw multivalue
 e_ipv4.attributes.address.value.single_value = '1.1.1.2'
