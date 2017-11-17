@@ -71,7 +71,8 @@ class IxnObject(object):
                 url = '%s?includes=%s' % (self.href, ','.join(includes))
                 refreshed_attributes = self._ixnhttp._send_recv('GET', url)
                 for dyn_attr in dyn_attrs:
-                    dyn_attr._value = getattr(refreshed_attributes, dyn_attr.name)
+                    value = getattr(refreshed_attributes, dyn_attr.name)
+                    setattr(self.attributes, dyn_attr.name, IxnDynAttr(self._ixnhttp, dyn_attr._meta_data, value))
             refresh_operation.__doc__ = 'Refresh the attributes of this %s object' % (meta_data.name)
             setattr(self, 'refresh', refresh_operation)
         
@@ -107,33 +108,6 @@ class IxnObject(object):
             _create_child.__doc__ = 'Create a child object under this %s object' % (meta_data.name)
             setattr(self, 'create_child', _create_child)
     
-    def _add_child_creates(self, meta_data, result):
-        for child in meta_data.children:
-            url = '%s/%s' % (self.href, child.name)
-            child_meta_data = self._ixnhttp._get_meta_data(url)
-
-            if child_meta_data.add is True:
-                def create_operation(url=url, count=1, payload=None):
-                    if payload is None:
-                        payload = []
-                        for i in range(0, count):
-                            payload.append({})
-                    response = self._ixnhttp.post(url, payload)
-                    new_objects = []
-                    for link in response.links:
-                        new_object = self._ixnhttp.get(link.href)
-                        setattr(new_object, 'href', link.href)
-                        new_objects.append(IxnObject(self._ixnhttp, new_object))
-                    if len(new_objects) == 1:
-                        return new_objects[0]
-                    else:
-                        return new_objects
-                create_operation.__doc__ = """Create a %s object. 
-                The count will create x number of default objects.
-                The payload if specified will supersede count and create x number of custom objects.""" % (child_meta_data.name)
-                setattr(self, 'create_%s' % (child_meta_data.name), create_operation)
-
-
     def _process_child_instances(self, meta_data, result):
         for child in meta_data.children:
             if hasattr(result, child.name):

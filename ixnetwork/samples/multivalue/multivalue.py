@@ -32,6 +32,8 @@ print(ethernet.attributes.mac.value.value_list)
 ethernet.attributes.mac.value.dump()
 
 # ethernet enable vlans
+ethernet.attributes.vlanCount.value = 3
+ethernet.update()
 ethernet.attributes.enableVlans.value.single_value = 'true'
 
 # get the vlan emulation host
