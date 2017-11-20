@@ -21,7 +21,7 @@ payload = {
     'type': 'layer23TrafficFlow',
     'visible': True
 }
-custom_view = query_result.statistics.create_view(payload=payload)
+custom_view = query_result.statistics.create_child('view', payload=payload)
 
 # create layer23TrafficFlowFilter payload
 layer23_traffic_flow_filter = IxnQuery(ixnhttp, custom_view.href) \

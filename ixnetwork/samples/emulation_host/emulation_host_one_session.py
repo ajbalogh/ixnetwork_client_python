@@ -28,10 +28,12 @@ config_mgmt.new_config()
 
 
 # scaffold
-vport = ixnhttp.root.create_vport()
-ixnhttp.root.create_topology(payload={'vports': [vport.href]}) \
-    .create_deviceGroup(payload={'multiplier': 1}) \
-    .create_ethernet().create_ipv4()
+vport = ixnhttp.root.create_child('vport')
+ixnhttp.root \
+    .create_child('topology', payload={'vports': [vport.href]}) \
+    .create_child('deviceGroup', payload={'multiplier': 1}) \
+    .create_child('ethernet') \
+    .create_child('ipv4')
 
 
 # find ipv4 emulation host session(s) by vport_name 
