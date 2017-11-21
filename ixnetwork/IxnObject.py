@@ -1,4 +1,4 @@
-"""Dynamically add attributes, operations, create methods based on meta data
+"""Dynamically add attributes, operations based on meta data
 """
 from ixnetwork.IxnDynAttr import IxnDynAttr
 
@@ -12,41 +12,40 @@ class IxnObject(object):
         setattr(self, 'attributes', lambda: None)
         setattr(self, 'operations', lambda: None)
         setattr(self, 'query', IxnQuery(self._ixnhttp, query_result.href))
-        meta_data = self._ixnhttp._get_meta_data(query_result.href)
-        self._add_attributes(meta_data, query_result)
-        self._add_operations(meta_data, query_result)
-        # self._add_child_creates(meta_data, query_result)
-        self._process_child_instances(meta_data, query_result)
+        self._meta_data = self._ixnhttp._get_meta_data(query_result.href)
+        self._add_attributes(query_result)
+        self._add_operations(query_result)
+        self._process_child_instances(query_result)
 
     def _get_dyn_attrs(self):
         dyn_attrs = []
-        for attr_name in dir(self.attributes):
-            dyn_attr = getattr(self.attributes, attr_name)
-            if isinstance(dyn_attr, IxnDynAttr):
+        for attribute in self._meta_data.attributes:
+            if hasattr(self.attributes, attribute.name):
+                dyn_attr = getattr(self.attributes, attribute.name)
                 dyn_attrs.append(dyn_attr)
         return dyn_attrs
 
-    def _add_attributes(self, meta_data, result):
-        for attribute in meta_data.attributes:
+    def _add_attributes(self, result):
+        for attribute in self._meta_data.attributes:
             if hasattr(result, attribute.name):
                 value = getattr(result, attribute.name)
                 setattr(self.attributes, attribute.name, IxnDynAttr(self._ixnhttp, attribute, value))
 
-    def _add_operations(self, meta_data, result):
+    def _add_operations(self, result):
         def dump_operation():
             print( 'href: %s' % (self.href))
             for dyn_attr in self._get_dyn_attrs():
                 print("%s: %s" % (dyn_attr.name, dyn_attr.value))
         setattr(self, 'dump', dump_operation)
 
-        if meta_data.remove is True:
+        if self._meta_data.remove is True:
             def delete_operation():
                 self._ixnhttp.delete(self.href)
-            delete_operation.__doc__ = 'Delete this %s object' % (meta_data.name)
+            delete_operation.__doc__ = 'Delete this %s object' % (self._meta_data.name)
             setattr(self, 'delete', delete_operation)
         
         update = False
-        for attribute in meta_data.attributes:
+        for attribute in self._meta_data.attributes:
             if attribute.readOnly is False:
                 update = True
                 break
@@ -59,7 +58,7 @@ class IxnObject(object):
                 if len(updates.keys()) > 0:
                     self._ixnhttp.patch(self.href, updates)
                     self.refresh()
-            update_operation.__doc__ = 'Update this %s object excluding multivalues which are handled immediately by the IxnMultivalue class' % (meta_data.name)
+            update_operation.__doc__ = 'Update this %s object excluding multivalues which are handled immediately by the IxnMultivalue class' % (self._meta_data.name)
             setattr(self, 'update', update_operation)
             
         if len(self._get_dyn_attrs()) > 0:
@@ -73,10 +72,10 @@ class IxnObject(object):
                 for dyn_attr in dyn_attrs:
                     value = getattr(refreshed_attributes, dyn_attr.name)
                     setattr(self.attributes, dyn_attr.name, IxnDynAttr(self._ixnhttp, dyn_attr._meta_data, value))
-            refresh_operation.__doc__ = 'Refresh the attributes of this %s object' % (meta_data.name)
+            refresh_operation.__doc__ = 'Refresh the attributes of this %s object' % (self._meta_data.name)
             setattr(self, 'refresh', refresh_operation)
         
-        for operation in meta_data.operations:
+        for operation in self._meta_data.operations:
             operation_name = operation.operation.lower()
             def method_operation(payload=None, operation_name=operation_name):
                 if self.href[-1] == '/':
@@ -87,7 +86,7 @@ class IxnObject(object):
             setattr(self.operations, operation_name, method_operation)
             getattr(self.operations, operation_name).__doc__ = operation.description
 
-        if len(meta_data.children) > 0:
+        if len(self._meta_data.children) > 0:
             def _create_child(child_name, count=1, payload=None):
                 if payload is None:
                     payload = []
@@ -105,11 +104,11 @@ class IxnObject(object):
                     return new_objects[0]
                 else:
                     return new_objects
-            _create_child.__doc__ = 'Create a child object under this %s object' % (meta_data.name)
+            _create_child.__doc__ = 'Create a child object under this %s object' % (self._meta_data.name)
             setattr(self, 'create_child', _create_child)
     
-    def _process_child_instances(self, meta_data, result):
-        for child in meta_data.children:
+    def _process_child_instances(self, result):
+        for child in self._meta_data.children:
             if hasattr(result, child.name):
                 value = getattr(result, child.name)
                 if isinstance(value, list):

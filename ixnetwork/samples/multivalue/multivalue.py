@@ -46,8 +46,10 @@ vlan.attributes.vlanId.value.dump()
 # vlan vlanId increment counter
 vlan.attributes.vlanId.value.set_counter('100', '1', 'increment')
 vlan.attributes.vlanId.value.dump()
+assert vlan.attributes.vlanId.value.get_values(2, 1)[0] == '102'
 
 # vlan vlanId decrement counter
 vlan.attributes.vlanId.value.set_counter('90', '1', 'decrement')
 vlan.attributes.vlanId.value.dump()
+assert vlan.attributes.vlanId.value.get_values(2, 1)[0] == '88'
 

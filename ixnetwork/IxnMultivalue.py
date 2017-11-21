@@ -96,7 +96,10 @@ class IxnMultivalue(object):
     def get_values(self, start_index=0, count=None):
         """Get values represented by this multivalue
         
-        :returns: list[str]: a list of values represented by this multivalue
+        start_index: 0 based offset in the list of values
+        count: default is all values
+
+        :returns: list[str]: a list of string values represented by this multivalue
         """
         if self._multivalue is None:
             self._refresh()
