@@ -63,13 +63,8 @@ class IxnObject(object):
             
         if len(self._get_dyn_attrs()) > 0:
             def refresh_operation():
-                includes = []
-                dyn_attrs = self._get_dyn_attrs()
-                for dyn_attr in dyn_attrs:
-                    includes.append(dyn_attr.name)
-                url = '%s?includes=%s' % (self.href, ','.join(includes))
-                refreshed_attributes = self._ixnhttp._send_recv('GET', url)
-                for dyn_attr in dyn_attrs:
+                refreshed_attributes = self._ixnhttp._send_recv('GET', self.href)
+                for dyn_attr in self._get_dyn_attrs():
                     value = getattr(refreshed_attributes, dyn_attr.name)
                     setattr(self.attributes, dyn_attr.name, IxnDynAttr(self._ixnhttp, dyn_attr._meta_data, value))
             refresh_operation.__doc__ = 'Refresh the attributes of this %s object' % (self._meta_data.name)
