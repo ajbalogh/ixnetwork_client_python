@@ -30,7 +30,6 @@ class IxnConfigManagement(object):
             for chassis in query_result.availableHardware.chassis:
                 chassis.delete()
             
-
     def save_config(self, remote_filename, download=False, local_filename=None):
         """Save the test tool configuration as a binary .ixncfg """
         self.file_mgmt.create(remote_filename)
@@ -40,19 +39,19 @@ class IxnConfigManagement(object):
                 local_filename = remote_filename
             self.file_mgmt.download(remote_filename, local_filename)
 
-    def export_config(self, start_xpath='/', descend=True, include_defaults=True, local_filename=None, export_format='json'):
+    def export_config(self, xpaths=['/descendant-or-self::*'], include_defaults=True, export_format='json', local_filename=None):
         """Export the test tool's current configuration 
         
-        :param start_xpath: The xpath at which the export will start at 
-        :param descend: True to recursively export child objects, False to export only the start_xpath object 
+        :param xpaths: The xpaths which the export will start at 
         :param include_defaults: True to export properties whose values are the same as default values, False to exclude them
-        :param local_filename: Write the exported json to a file instead of returning a string
         :param export_format: Export the configuration in one of the following formats (json)
+        :param local_filename: Write the exported json to a file instead of returning a string
         :returns: JSON configuration as a string if the local_filename is not specified
         """
+        resource_manager = self._ixnhttp.root.query.clear().node('resourceManager').go().resourceManager
         payload = {
-            'arg1': start_xpath, 
-            'arg2': descend, 
+            'arg1': resource_manager.href, 
+            'arg2': xpaths, 
             'arg3': include_defaults,
             'arg4': export_format
         }
@@ -60,10 +59,11 @@ class IxnConfigManagement(object):
             self._file_mgmt.create(local_filename)
             filename_only = self._file_mgmt._get_filename(local_filename)
             payload['arg5'] = filename_only
-        response = self._ixnhttp.root.operations.exportconfig(payload)
         if local_filename is not None:
+            response = resource_manager.operations.exportconfigfile(payload)
             self._file_mgmt.download(filename_only, local_filename)
         else:
+            response = resource_manager.operations.exportconfig(payload)
             return json.loads(response.result)
 
     def import_config(self, config):

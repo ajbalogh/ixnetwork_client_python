@@ -22,13 +22,13 @@ all_objects_from_root = config_mgmt.export_config()
 print(json.dumps(all_objects_from_root, indent=4))
 
 # export a non root node and its children
-multiple_objects = config_mgmt.export_config('/availableHardware', descend=True)
+multiple_objects = config_mgmt.export_config(xpaths=['/availableHardware/descendant-or-self::*'])
 print(json.dumps(multiple_objects, indent=4))
 
 # export a single object in the configuration that contains multivalues
-single_object = config_mgmt.export_config('/globals/topology/ipv4/arpRate', descend=False)
+single_object = config_mgmt.export_config(xpaths=['/globals/topology/ipv4/arpRate'])
 print(json.dumps(single_object, indent=4))
 
 # export multiple objects to a file
 ixnhttp.post('/vport', [{'name': 'abc-%d' % i} for i in range(10)])
-config_mgmt.export_config('/vport', descend=False, include_defaults=True, local_filename="c:/temp/vports.json")
+config_mgmt.export_config(xpaths=['/vport'], local_filename="c:/temp/vports.json")
