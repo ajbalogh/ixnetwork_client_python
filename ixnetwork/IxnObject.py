@@ -8,6 +8,7 @@ class IxnObject(object):
     def __init__(self, ixnhttp, query_result):
         self._ixnhttp = ixnhttp
         from ixnetwork.IxnQuery import IxnQuery
+        setattr(self, 'id', query_result.id if hasattr(query_result, 'id') else None)
         setattr(self, 'href', query_result.href)
         setattr(self, 'attributes', lambda: None)
         setattr(self, 'operations', lambda: None)
