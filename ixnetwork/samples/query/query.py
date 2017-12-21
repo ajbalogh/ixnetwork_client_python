@@ -10,7 +10,7 @@ from ixnetwork.IxnQuery import IxnQuery
 import time
 
 # get an IxnHttp instance using the samples Config object
-ixnhttp = Config.get_IxnHttp_instance()
+ixnhttp = Config.get_IxnHttp_instance(use_gui=True)
 
 # management objects
 config_mgmt = IxnConfigManagement(ixnhttp)
@@ -34,6 +34,7 @@ for vport in query_result.vport:
 # get the eth-2 virtual port using the query
 query_result = IxnQuery(ixnhttp, '/') \
     .node('vport', properties=['*'], where=[{'property': 'name', 'regex': 'eth-2'}]) \
+	.node('^(l1Config|ethernet|ethernetvm|atm)$', properties=['*']) \
     .go()
 
 # using the returned query_result print the vport names

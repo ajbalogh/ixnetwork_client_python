@@ -20,7 +20,7 @@ class Config(object):
     :param HOST_REST_PORT: the rest port of the IxNetwork test tool
     """
     USE_IXNETWORK_GUI = True
-    HOST_IP_ADDRESS = '10.113.9.225'
+    HOST_IP_ADDRESS = '127.0.0.1'
     HOST_REST_PORT = 12345
     TRACE_REST_CALLS = False
 
