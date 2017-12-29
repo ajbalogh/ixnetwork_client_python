@@ -32,12 +32,12 @@ class IxnConfigManagement(object):
             
     def save_config(self, remote_filename, download=False, local_filename=None):
         """Save the test tool configuration as a binary .ixncfg """
-        self.file_mgmt.create(remote_filename)
+        self._file_mgmt.create(remote_filename)
         self._ixnhttp.root.operations.saveconfig({'arg1': remote_filename})
         if download:
             if local_filename is None:
                 local_filename = remote_filename
-            self.file_mgmt.download(remote_filename, local_filename)
+            self._file_mgmt.download(remote_filename, local_filename)
 
     def export_config(self, xpaths=['/descendant-or-self::*'], include_defaults=True, export_format='json', local_filename=None):
         """Export the test tool's current configuration 
