@@ -53,3 +53,12 @@ vlan.attributes.vlanId.value.set_counter('90', '1', 'decrement')
 vlan.attributes.vlanId.value.dump()
 assert vlan.attributes.vlanId.value.get_values(2, 1)[0] == '88'
 
+# vlan vlanId repeatableRandom 
+vlan.attributes.vlanId.value.set_repeatable_random(count=10, fixed=0, mask=6, seed=1)
+vlan.attributes.vlanId.value.dump()
+assert vlan.attributes.vlanId.value.get_values(2, 1)[0] == '4'
+
+# vlan vlanId repeatableRandomRange 
+vlan.attributes.vlanId.value.set_repeatable_random_range(min=1, max=10, step=1, seed=1)
+vlan.attributes.vlanId.value.dump()
+assert vlan.attributes.vlanId.value.get_values(2, 1)[0] == '10'

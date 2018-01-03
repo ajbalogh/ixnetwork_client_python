@@ -10,6 +10,7 @@ class IxnMultivalue(object):
     ALTERNATE = 'alternate'
     RANDOM = 'random'
     REPEATABLE_RANDOM = 'repeatableRandom'
+    REPEATABLE_RANDOM_RANGE = 'repeatableRandomRange'
     VALUE_LIST = 'valueList'
     STRING = 'string'
     CUSTOM = 'custom'
@@ -29,6 +30,7 @@ class IxnMultivalue(object):
             .node('alternate', properties=['*']) \
             .node('random', properties=['*']) \
             .node('repeatableRandom', properties=['*']) \
+            .node('repeatableRandomRange', properties=['*']) \
             .node('valueList', properties=['*']) \
             .node('string', properties=['*']) \
             .node('custom', properties=['*']) \
@@ -47,7 +49,7 @@ class IxnMultivalue(object):
     def pattern(self):
         """Get the current pattern of the multivalue
         
-        :returns: str: singleValue|counter|alternate|random|repeatableRandom|valueList|string|custom
+        :returns: str: singleValue|counter|alternate|random|repeatableRandom|repeatableRandomRange|valueList|string|custom
         """
         if self._multivalue is None:
             self._refresh()
@@ -57,7 +59,7 @@ class IxnMultivalue(object):
     def available_patterns(self):
         """Get all available patterns for the multivalue
         
-        :returns: list[str]: a list of one or more of singleValue|counter|alternate|random|repeatableRandom|valueList|string|custom
+        :returns: list[str]: a list of one or more of singleValue|counter|alternate|random|repeatableRandom|repeatableRandomRange|valueList|string|custom
         """
         if self._multivalue is None:
             self._refresh()
@@ -225,28 +227,75 @@ class IxnMultivalue(object):
             self._refresh()
 
     def set_repeatable_random(self, count=None, fixed=None, mask=None, seed=None):
-        """Changes the pattern to counter and sets the values"""
+        """Changes the pattern to repetableRandom and sets the values"""
         if self._multivalue is None:
             self._refresh()
         if self.pattern != IxnMultivalue.REPEATABLE_RANDOM:
-            self._multivalue.create_child('repeatableRandom')
+            payload = {}
+            if count is not None:
+                payload['count'] = count
+            if fixed is not None:
+                payload['fixed'] = fixed
+            if mask is not None:
+                payload['mask'] = mask
+            if seed is not None:
+                payload['seed'] = seed
+            self._multivalue.create_child(IxnMultivalue.REPEATABLE_RANDOM, payload=payload)
             self._refresh()
-        if count is not None:
-            self._multivalue.repeatableRandom.attributes.count.value = count
-        if fixed is not None:
-            self._multivalue.repeatableRandom.attribues.fixed.value = fixed
-        if mask is not None:
-            self._multivalue.repeatableRandom.attributes.mask.value = mask
-        if seed is not None:
-            self._multivalue.repeatableRandom.attributes.seed.value = seed
-        self._multivalue.repeatableRandom.update()
-        self._refresh()
+        else:
+            if count is not None:
+                self._multivalue.repeatableRandom.attributes.count.value = count
+            if fixed is not None:
+                self._multivalue.repeatableRandom.attributes.fixed.value = fixed
+            if mask is not None:
+                self._multivalue.repeatableRandom.attributes.mask.value = mask
+            if seed is not None:
+                self._multivalue.repeatableRandom.attributes.seed.value = seed
+            self._multivalue.repeatableRandom.update()
+            self._refresh()
 
     def get_repeatable_random(self):
         """Get the repeatableRandom variables
 
-        :returns: repeatableRandom object or None: A valid repetableRandom object or None if the pattern is not repetableRandom
+        :returns: A valid repeatableRandom object or None if the pattern is not repeatableRandom
         """
         if self._multivalue.pattern.value == IxnMultivalue.REPEATABLE_RANDOM:
             return self._multivalue.repeatableRandom
+        return None
+
+    def set_repeatable_random_range(self, min=None, max=None, step=None, seed=None):
+        """Changes the pattern to repeatableRandomRange and sets the values"""
+        if self._multivalue is None:
+            self._refresh()
+        if self.pattern != IxnMultivalue.REPEATABLE_RANDOM_RANGE:
+            payload = {}
+            if min is not None:
+                payload['min'] = min
+            if max is not None:
+                payload['max'] = max
+            if step is not None:
+                payload['step'] = step
+            if seed is not None:
+                payload['seed'] = seed
+            self._multivalue.create_child(IxnMultivalue.REPEATABLE_RANDOM_RANGE, payload=payload)
+            self._refresh()
+        else:
+            if min is not None:
+                self._multivalue.repeatableRandomRange.attributes.min.value = min
+            if max is not None:
+                self._multivalue.repeatableRandomRange.attributes.max.value = max
+            if step is not None:
+                self._multivalue.repeatableRandomRange.attributes.step.value = step
+            if seed is not None:
+                self._multivalue.repeatableRandomRange.attributes.seed.value = seed
+            self._multivalue.repeatableRandomRange.update()
+            self._refresh()
+
+    def get_repeatable_random_range(self):
+        """Get the repeatableRandomRange variables
+
+        :returns: A valid repeatableRandomRange object or None if the pattern is not repeatableRandomRange
+        """
+        if self._multivalue.pattern.value == IxnMultivalue.REPEATABLE_RANDOM_RANGE:
+            return self._multivalue.repeatableRandomRange
         return None
