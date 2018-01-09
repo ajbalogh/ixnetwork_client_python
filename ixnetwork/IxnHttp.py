@@ -200,8 +200,10 @@ class IxnHttp(object):
             self._connection.request(method, url, None, headers)
 
         response = self._connection.getresponse()
-        if str(response.status).startswith('2') is False:
-            raise Exception(response.read())
+		if str(response.status).startswith('3') is True:
+			return self._send_recv(method, response.getheader('Location'), payload=payload, fid=fid, file_content=file_content)
+		elif str(response.status).startswith('2') is False:
+			raise Exception(response.read)
         elif method == 'GET' and fid is not None:
             fid.write(response.read())
         else:
