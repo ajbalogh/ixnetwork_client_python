@@ -5,10 +5,10 @@ python:
   - "nightly"
 
 install:
-  pip install .
+  - pip install -r requirements.txt
 
 script: 
-  make test
+  - make test
 
 # deploy:
 #   provider: pypi
