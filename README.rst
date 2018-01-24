@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ajbalogh/ixnetwork_client_python.svg?branch=master)](https://travis-ci.org/ajbalogh/ixnetwork_client_python)
+
 IxNetwork REST API python client
 ================================
 A python client that interacts with an Ixia Solutions Group IxNetwork test tool.
