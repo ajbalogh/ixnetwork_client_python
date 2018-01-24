@@ -1,17 +1,15 @@
 language: python
-
 python:
-  - "2.7"
-  - "nightly"
-
+- '2.7'
+- nightly
 install:
-  - pip install -r requirements.txt
-
+- pip install -r requirements.txt
 script: true
-
-
-# deploy:
-#   provider: pypi
-#   user: "abalogh"
-#   password:
-#     secure: ""
+deploy:
+  provider: pypi
+  user: abalogh
+  password:
+    secure: r8X+lNAeRphNFuNAyP0k8yp5prSWvIEBYNFC3rTKKF06tBjf4eUW4QxCmH3HfpiU8V3c70zYgxFPafqhck0l+94RnFGIxhSeTQtGAhkvUVT9FPF2qmIeyPYqBl4gAWrdCbd47NKn34Dc5bcdR/YFV/mxzlFMWFv+iXTUau/8hAXjOI8a11BGkOUFhAaxal2fzD7mooxuJKpdenepqhniNM8YaJHJFb1xM8VIYKAEKGmjsTAl0W7dvabjlPOhz3JmvB0RM14qWr4J4IiCPrCzT0TKnls5svt8hMOCRi+EHdlcbOnLIlCehjF9tN6zpNyZ8aYdG/FxfCvhu/2yVtgf6gXPShzLjQKEYmS/fOypuPdujQJgakG3dBlYupK5nv4oKXxamsWirCtsZU0nasTvctkTtY28X6rylSkRyORuQeekeAh4k6agxlb1iQIKZHhocgElsZNpJg21aJEmvVTyo8r/x8aF+UikMdJRerMcbf8h4+YKw/jXQaFOneBuzi9v8Nf1bfPATaxxAUw9U6Gcs8REhzCeTHiBoh9XtH0jQhz2C6/DLU7dgmnAscmtwkHX7FCJFVhc7uVriOAo8kfhuu+iJZu+WLSHmYfpMvdlWM3Hxj+nd5VMlZTsYR0GLoZpPPDKEK9WkndbjYrjBaG28Ozn/5il4cwCSaWP/YhWBgw=
+  on:
+    tags: true
+    branch: master
