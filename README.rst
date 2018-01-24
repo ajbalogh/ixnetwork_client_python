@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ajbalogh/ixnetwork_client_python.svg?branch=master)](https://travis-ci.org/ajbalogh/ixnetwork_client_python)
+https://travis-ci.org/ajbalogh/ixnetwork_client_python.svg?branch=master
 
 IxNetwork REST API python client
 ================================
