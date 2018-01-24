@@ -1,4 +1,5 @@
-https://travis-ci.org/ajbalogh/ixnetwork_client_python.svg?branch=master
+.. image:: https://travis-ci.org/ajbalogh/ixnetwork_client_python.svg?branch=master
+    :target: https://travis-ci.org/ajbalogh/ixnetwork_client_python
 
 IxNetwork REST API python client
 ================================
