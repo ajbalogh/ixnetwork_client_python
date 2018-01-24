@@ -35,6 +35,7 @@ class IxnMultivalue(object):
             .node('string', properties=['*']) \
             .node('custom', properties=['*']) \
             .node('nest', properties=['*']) \
+            .node('increment', properties=['*']) \
             .go()
 
     @property
@@ -217,6 +218,75 @@ class IxnMultivalue(object):
             self._refresh()
         self._multivalue.valueList.attributes.values.value = values
         self._multivalue.valueList.update()
+
+    def set_custom(self, start_value=None, step_value=None):
+        """ Change the pattern to Custom using only start and step """
+        if self._multivalue is None:
+            self._refresh()
+        if self.pattern != IxnMultivalue.CUSTOM:
+            payload = {}
+            if start_value is not None:
+                payload['start'] = start_value
+            if step_value is not None:
+                payload['step'] = step_value
+            custom_object = self._multivalue.create_child(IxnMultivalue.CUSTOM, payload=payload)
+        else:
+            if start_value is not None:
+                self._multivalue.custom.start.value = start_value
+            if step_value is not None:
+                self._multivalue.custom.step.value = step_value
+            custom_object =self._multivalue.custom.update()
+
+        self._multivalue_href = custom_object.href
+        self._refresh()
+        return self
+
+    @property
+    def get_increment(self):
+        return self._multivalue.increment
+
+    def set_custom_increment(self, value = None, count = None, href=None):
+        """
+        This will work on top of custom or increment node
+        It will modify value and count when call with href
+        """
+        self._refresh()
+
+        if href is None:
+            if len(self.get_increment) >= 1:
+                self._multivalue_href = self.get_increment[0].href
+                self._refresh()
+                if value is not None:
+                    self._multivalue.attributes.value.value = value
+                if count is not  None:
+                    self._multivalue.attributes.count.value = count
+                self._multivalue.update()
+            else:
+                payload = {}
+                if value is not None:
+                    payload['value'] = value
+                if count is not None:
+                    payload['count'] = count
+                increment_object = self._multivalue.create_child('increment', payload=payload)
+                self._multivalue_href = increment_object.href
+        else:
+            self._multivalue_href = href
+            self._refresh()
+            if value is not None:
+                self._multivalue.attributes.value.value = value
+            if count is not  None:
+                self._multivalue.attributes.count.value = count
+            self._multivalue.update()
+        self._refresh()
+        return self
+
+    def set_custom_basic(self, start_value, step_value, repeat_each_value, sequence_length):
+        """ This is a high level utility function to create custom basic pattern"""
+        # set default value to 1 if value <0
+        repeat_each_value = repeat_each_value if repeat_each_value <=0 else 1
+        sequence_length = sequence_length if sequence_length <=0 else 1
+        null_value = self.set_custom(start_value = start_value)._multivalue.attributes.step.value
+        self.set_custom_increment(step_value, sequence_length).set_custom_increment(null_value, repeat_each_value)
 
     def set_random(self):
         """Set the multivalue pattern to random."""
