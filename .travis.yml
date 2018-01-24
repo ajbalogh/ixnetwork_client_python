@@ -4,12 +4,12 @@ python:
   - "2.7"
   - "nightly"
 
-install:
+# install:
 
-script:
+# script:
 
-deploy:
-  provider: pypi
-  user: "abalogh"
-  password:
-    secure: ""
+# deploy:
+#   provider: pypi
+#   user: "abalogh"
+#   password:
+#     secure: ""
