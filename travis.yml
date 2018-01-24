@@ -1,0 +1,15 @@
+language: python
+
+python:
+  - "2.7"
+  - "nightly"
+
+install:
+
+script:
+
+deploy:
+  provider: pypi
+  user: "abalogh"
+  password:
+    secure: ""
