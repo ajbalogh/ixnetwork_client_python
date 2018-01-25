@@ -1,6 +1,15 @@
 .. image:: https://travis-ci.org/ajbalogh/ixnetwork_client_python.svg?branch=master
     :target: https://travis-ci.org/ajbalogh/ixnetwork_client_python
 
+.. image:: https://img.shields.io/pypi/v/ixnetwork.svg
+    :target: https://pypi.org/project/ixnetwork
+
+.. image:: https://img.shields.io/pypi/pyversions/ixnetwork.svg
+    :target: https://pypi.org/project/ixnetwork
+
+.. image:: https://img.shields.io/badge/license-MIT-green.svg
+    :target: https://en.wikipedia.org/wiki/MIT_License
+
 IxNetwork REST API python client
 ================================
 A python client that interacts with an Ixia Solutions Group IxNetwork test tool.
