@@ -2,10 +2,10 @@
     :target: https://travis-ci.org/ajbalogh/ixnetwork_client_python
 
 .. image:: https://img.shields.io/pypi/v/ixnetwork.svg
-    :target: https://pypi.org/project/ixnetwork
+    :target: https://pypi.org/project/ixnetwork-rest
 
 .. image:: https://img.shields.io/pypi/pyversions/ixnetwork.svg
-    :target: https://pypi.org/project/ixnetwork
+    :target: https://pypi.org/project/ixnetwork-rest
 
 .. image:: https://img.shields.io/badge/license-MIT-green.svg
     :target: https://en.wikipedia.org/wiki/MIT_License
