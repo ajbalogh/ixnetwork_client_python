@@ -1,3 +1,9 @@
+"""A setuptools based setup module.
+See:
+https://packaging.python.org/en/latest/distripip install buting.html
+https://github.com/pypa/sampleproject
+"""
+
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
 # To use a consistent encoding
@@ -11,7 +17,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='ixnetwork',
+    name='ixnetwork-rest',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
@@ -22,11 +28,11 @@ setup(
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/openixia/ixnetwork_client_python',
+    url='https://github.com/ajbalogh/ixnetwork_client_python',
 
     # Author details
-    author='abalogh@ixiacom.com',
-    author_email='abalogh@ixiacom.com',
+    author='andrey.balogh@gmail.com',
+    author_email='andrey.balogh@gmail.com',
 
     # Choose your license
     license='MIT',
