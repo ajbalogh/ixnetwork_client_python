@@ -1,3 +1,7 @@
+# PRE-REQUISITES
+# setup deploy: password: secure: option below by installing ruby and travis gem and 
+# executing the following from a command line in the directory where .travis.yml exists
+# travis encrypt --add deploy.password <pypi password here>
 language: python
 python:
 - '2.7'
