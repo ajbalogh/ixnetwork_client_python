@@ -9,6 +9,7 @@ from ixnetwork.IxnHttp import IxnHttp
 
 # this sample demonstrates how to reconnect to an existing session if one exists
 ixnhttp = IxnHttp(Config.HOST_IP_ADDRESS, rest_port=Config.HOST_REST_PORT)
+ixnhttp.auth('admin', 'admin')
 sessions = ixnhttp.sessions()
 for session in sessions:
     session.dump()

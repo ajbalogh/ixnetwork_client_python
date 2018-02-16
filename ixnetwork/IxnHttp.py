@@ -201,6 +201,7 @@ class IxnHttp(object):
 
         response = self._connection.getresponse()
         if str(response.status).startswith('3') is True:
+            content = response.read()
             return self._send_recv(method, response.getheader('Location'), payload=payload, fid=fid, file_content=file_content)
         elif str(response.status).startswith('2') is False:
             raise Exception(response.read())

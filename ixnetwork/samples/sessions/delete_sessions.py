@@ -11,6 +11,7 @@ from ixnetwork.IxnHttp import IxnHttp
 
 # delete all sessions on the managed host
 ixnhttp = IxnHttp(Config.HOST_IP_ADDRESS, rest_port=Config.HOST_REST_PORT)
+ixnhttp.auth('admin', 'admin')
 for session in ixnhttp.sessions():
     ixnhttp.current_session = session
     ixnhttp.delete_session()

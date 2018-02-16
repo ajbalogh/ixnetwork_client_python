@@ -12,5 +12,6 @@ from ixnetwork.IxnHttp import IxnHttp
 # IxNetwork API Server
 # create a session using username and password
 ixnhttp = IxnHttp(Config.HOST_IP_ADDRESS, rest_port=Config.HOST_REST_PORT)
-session = ixnhttp.create_session(username='admin', password='admin')
+ixnhttp.auth('admin', 'admin')
+session = ixnhttp.create_session()
 session.dump()
