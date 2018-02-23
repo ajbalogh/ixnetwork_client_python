@@ -75,7 +75,7 @@ class IxnHttp(object):
 
     def sessions(self):
         """Get a list of sessions on the server """
-        return self.get('/api/v1/sessions')
+        return self.get('/api/v1/sessions', links=False)
 
     def create_session(self):
         """Create and set a new IxNetwork session on the host specified in the constructor """
@@ -138,8 +138,8 @@ class IxnHttp(object):
             raise Exception('%s: %s - %s' % (response.state, response.message, response.result))
         return response
 
-    def get(self, url, fid=None):
-        if str(url).find('links=true') == -1:
+    def get(self, url, fid=None, links=True):
+        if str(url).find('links=true') == -1 and links is True:
             if str(url).find('?') == -1:
                 url += "?"
             else:
@@ -214,7 +214,6 @@ class IxnHttp(object):
             return None
         else:
             raise Exception('%s %s %s' % (response.status_code, response.reason, response.text))
-
 
     def _make_lambda(self, contentObject):
         if isinstance(contentObject, list):
