@@ -51,13 +51,13 @@ e_ipv4.attributes.address.value.single_value = '1.1.1.2'
 e_ipv4.attributes.gatewayIp.value.single_value = '1.1.1.1'
 
 # create an ipv4 traffic item
-traffic = ixnhttp.root.query.clear().node('traffic', properties = ['*']).go()
+traffic = ixnhttp.root.query.clear().node('traffic', properties = ['*']).go().traffic
 traffic_item = traffic.create_child('trafficItem', payload = {'trafficType': 'ipv4'})
 endpoint_set = traffic_item.create_child('endpointSet', payload = {
-	'sources': w_topology.attributes.vports.value,
-	'destinations': e_topology.attributes.vports.value
+	'sources': [w_ipv4.href],
+	'destinations': [e_ipv4.href]
 	}
 )
-high_level_streams = traffic_item.query.node('highLevelStream', properties = ['*']).go()
-
+high_level_streams = traffic_item.query.node('highLevelStream', properties = ['*']).go().highLevelStream
+print(high_level_streams)
 # adjust frameSize, frameRate, transmissionControl, stack, field

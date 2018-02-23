@@ -8,21 +8,20 @@ It also exposes a root object that has an IxnQuery that can be used to retrieve
 any object in the hierarchy.
 """
 
-
-import json
-try:
-    import httplib
-except:
-    import http.client as httplib
+import sys
 import os
 import ssl
-try:
-    import urllib2
-except:
-    import urllib.request as urllib2
 import time
+import json
+import requests
+import urllib3
 from ixnetwork.IxnQuery import IxnQuery
 
+if sys.version < '2.7.9':
+    import requests.packages.urllib3
+    requests.packages.urllib3.disable_warnings()
+else:
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class IxnHttp(object):
     """IxNetwork REST session. """
@@ -46,15 +45,15 @@ class IxnHttp(object):
         self._file_mgmt = None
         self._meta_data = {}
         self._headers = {}
+        self._verify_cert = False
         self.trace = False
         if api_key is not None:
             self._headers['X-Api-Key'] = api_key
         baseAddress = hostname + ":" + str(rest_port)
+        scheme = 'http'
         if rest_port == 443 or secure:
-            self._connection = httplib.HTTPSConnection(
-                baseAddress, context=ssl._create_unverified_context())
-        else:
-            self._connection = httplib.HTTPConnection(baseAddress)
+            scheme = 'https'
+        self._connection = '%s://%s:%s' % (scheme, hostname, rest_port)
 
     def auth(self, username, password):
         """ Authenticate against the host and port
@@ -180,41 +179,42 @@ class IxnHttp(object):
     def _send_recv(self, method, url, payload=None, fid=None, file_content=None):
         if url.find('/api/v1/sessions') == -1 and self.current_session is not None:
             url = "/api/v1/sessions/%s/ixnetwork%s" % (self.current_session.id, url)
+        url = '%s%s' % (self._connection, url)
+        if '?' in url:
+            url = '%s&deprecated=true' % url
+        else:
+            url = '%s?deprecated=true' % url
         headers = self._headers.copy()
         if self.trace:
             print('%s %s %s' % (int(time.time()), method, url))
         if payload is not None:
             headers['Content-Type'] = 'application/json'
-            self._connection.request(method, url, json.dumps(payload), headers)
+            response = requests.request(method, url, data=json.dumps(payload), headers=headers, verify=self._verify_cert)
         elif method == 'POST' and fid is not None:
             headers['Content-Type'] = 'application/octet-stream'
             if fid.__class__.__name__ == 'BufferedReader':
                 headers['Content-Length'] = os.fstat(fid.raw.fileno()).st_size
-                self._connection.request(method, url, fid.raw, headers)
+                response = requests.request(method, url, data=fid.raw, headers=headers, verify=self._verify_cert)
             else:                            
-                self._connection.request(method, url, fid, headers)
+                response = requests.request(method, url, data=fid, headers=headers, verify=self._verify_cert)
         elif method == 'POST' and file_content is not None:
             headers['Content-Type'] = 'application/octet-stream'
-            self._connection.request(method, url, json.dumps(file_content), headers)
+            response = requests.request(method, url, data=json.dumps(file_content), headers=headers, verify=self._verify_cert)
         else:
-            self._connection.request(method, url, None, headers)
+            response = requests.request(method, url, data=None, headers=headers, verify=self._verify_cert)
 
-        response = self._connection.getresponse()
-        if str(response.status).startswith('3') is True:
-            content = response.read()
-            return self._send_recv(method, response.getheader('Location'), payload=payload, fid=fid, file_content=file_content)
-        elif str(response.status).startswith('2') is False:
-            raise Exception(response.read())
-        elif method == 'GET' and fid is not None:
-            fid.write(response.read())
+        if str(response.status_code).startswith('2') is True:
+            if response.headers.get('Content-Type'):
+                if 'application/json' in response.headers['Content-Type']:
+                    return self._make_lambda(response.json())
+                elif 'application/octet-stream' in response.headers['Content-Type'] and fid is not None:
+                    for chunk in response.iter_content(chunk_size=1024): 
+                        if chunk: 
+                            fid.write(chunk)
+            return None
         else:
-            content = response.read()
-            if len(content) > 0:
-                if isinstance(content, bytes):
-                    content = content.decode('utf-8')
-                return self._make_lambda(json.loads(content))
-            else:
-                return None
+            raise Exception('%s %s %s' % (response.status_code, response.reason, response.text))
+
 
     def _make_lambda(self, contentObject):
         if isinstance(contentObject, list):

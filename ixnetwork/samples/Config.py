@@ -21,7 +21,7 @@ class Config(object):
     """
     USE_IXNETWORK_GUI = True
     HOST_IP_ADDRESS = '127.0.0.1'
-    HOST_REST_PORT = 12345
+    HOST_REST_PORT = 11009
     TRACE_REST_CALLS = False
 
     @staticmethod    
