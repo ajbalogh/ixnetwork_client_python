@@ -46,6 +46,8 @@ class IxnHttp(object):
         self._meta_data = {}
         self._headers = {}
         self._verify_cert = False
+        self._deprecated = True
+        self._links = True
         self.trace = False
         if api_key is not None:
             self._headers['X-Api-Key'] = api_key
@@ -75,7 +77,9 @@ class IxnHttp(object):
 
     def sessions(self):
         """Get a list of sessions on the server """
-        return self.get('/api/v1/sessions', links=False)
+        self._links = False
+        self._deprecated = False
+        return self.get('/api/v1/sessions')
 
     def create_session(self):
         """Create and set a new IxNetwork session on the host specified in the constructor """
@@ -138,13 +142,12 @@ class IxnHttp(object):
             raise Exception('%s: %s - %s' % (response.state, response.message, response.result))
         return response
 
-    def get(self, url, fid=None, links=True):
-        if str(url).find('links=true') == -1 and links is True:
-            if str(url).find('?') == -1:
-                url += "?"
+    def get(self, url, fid=None):
+        if str(url).find('links=true') == -1 and self._links is True:
+            if '?' in url:
+                url = '%s&links=true' % url
             else:
-                url += "&"
-            url += "links=true"
+                url = '%s?links=true' % url
         return self._send_recv('GET', url, payload=None, fid=fid)
     
     def post(self, url, payload=None, fid=None, file_content=None):
@@ -180,13 +183,19 @@ class IxnHttp(object):
         if url.find('/api/v1/sessions') == -1 and self.current_session is not None:
             url = "/api/v1/sessions/%s/ixnetwork%s" % (self.current_session.id, url)
         url = '%s%s' % (self._connection, url)
-        if '?' in url:
-            url = '%s&deprecated=true' % url
-        else:
-            url = '%s?deprecated=true' % url
+        if str(url).find('deprecated=true') == -1 and self._deprecated is True:
+            if '?' in url:
+                url = '%s&deprecated=true' % url
+            else:
+                url = '%s?deprecated=true' % url
         headers = self._headers.copy()
+
         if self.trace:
             print('%s %s %s' % (int(time.time()), method, url))
+        
+        self._links = True
+        self._deprecated = True
+
         if payload is not None:
             headers['Content-Type'] = 'application/json'
             response = requests.request(method, url, data=json.dumps(payload), headers=headers, verify=self._verify_cert)
