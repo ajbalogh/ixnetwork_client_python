@@ -248,19 +248,3 @@ class IxnHttp(object):
             return data_object
         else:
             return contentObject
-
-    def _get_meta_data(self, href):
-        pieces = href.split('/')
-        meta_url = '/'.join(pieces[0:5])
-        for i in range(5, len(pieces)):
-            piece = pieces[i]
-            if len(piece) > 0 and piece.isdigit() is False:
-                meta_url = '%s/%s' % (meta_url, piece)
-        if meta_url in IxnHttp._meta_data:
-            meta_data = IxnHttp._meta_data[meta_url]
-        else:
-            meta_data = self.help(meta_url).custom
-            IxnHttp._meta_data[meta_url] = meta_data
-        return meta_data
-
-
