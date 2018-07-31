@@ -1,5 +1,7 @@
-# from IxnHttp import IxnHttp
+"""Encapsulates file transfer
+"""
 import json
+import os
 
 
 class IxnFileManagement(object):
@@ -46,7 +48,7 @@ class IxnFileManagement(object):
         return files
 
     def _get_filename(self, filename):
-        return filename.replace('\\', '/').split('/').pop()
+        return os.path.basename(os.path.normpath(filename))
 
     def _add_href(self, file_object):
         file_object.href = '/api/v1/sessions/%s/ixnetwork/files/%s' % (self._ixnhttp.current_session.id, file_object.name)
