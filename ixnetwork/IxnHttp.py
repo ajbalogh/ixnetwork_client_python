@@ -212,6 +212,9 @@ class IxnHttp(object):
         else:
             response = requests.request(method, url, data=None, headers=headers, verify=self._verify_cert)
 
+        if response.history is not None and len(response.history) > 0 and response.history[0].status_code == 307 and response.history[0].headers['Location'].startswith('https'):
+            self._connection = self._connection.replace('http://', 'https://')
+            
         if str(response.status_code).startswith('2') is True:
             if response.headers.get('Content-Type'):
                 if 'application/json' in response.headers['Content-Type']:
