@@ -179,7 +179,8 @@ class IxnHttp(object):
     def _send_recv(self, method, url, payload=None, fid=None, file_content=None):
         if url.find('/api/v1/sessions') == -1 and self.current_session is not None:
             url = "/api/v1/sessions/%s/ixnetwork%s" % (self.current_session.id, url)
-        url = '%s%s' % (self._connection, url)
+        if 'https' not in url:
+            url = '%s%s' % (self._connection, url)
         if '?' in url:
             url = '%s&deprecated=true' % url
         else:
