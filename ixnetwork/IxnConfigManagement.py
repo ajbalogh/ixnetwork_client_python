@@ -56,12 +56,11 @@ class IxnConfigManagement(object):
             'arg4': export_format
         }
         if local_filename is not None:
-            self._file_mgmt.create(local_filename)
-            filename_only = self._file_mgmt._get_filename(local_filename)
-            payload['arg5'] = filename_only
-        if local_filename is not None:
+            remote_filename = self._file_mgmt._get_filename(local_filename)
+            self._file_mgmt.create(remote_filename)
+            payload['arg5'] = remote_filename
             response = resource_manager.operations.exportconfigfile(payload)
-            self._file_mgmt.download(filename_only, local_filename)
+            self._file_mgmt.download(remote_filename, local_filename)
         else:
             response = resource_manager.operations.exportconfig(payload)
             return json.loads(response.result)

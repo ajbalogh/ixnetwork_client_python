@@ -46,6 +46,8 @@ class IxnHttp(object):
         self._meta_data = {}
         self._headers = {}
         self._verify_cert = False
+        self._deprecated = True
+        self._links = True
         self.trace = False
         if api_key is not None:
             self._headers['X-Api-Key'] = api_key
@@ -75,7 +77,9 @@ class IxnHttp(object):
 
     def sessions(self):
         """Get a list of sessions on the server """
-        return self.get('/api/v1/sessions', links=False)
+        self._links = False
+        self._deprecated = False
+        return self.get('/api/v1/sessions')
 
     def create_session(self):
         """Create and set a new IxNetwork session on the host specified in the constructor """
@@ -138,13 +142,12 @@ class IxnHttp(object):
             raise Exception('%s: %s - %s' % (response.state, response.message, response.result))
         return response
 
-    def get(self, url, fid=None, links=True):
-        if str(url).find('links=true') == -1 and links is True:
-            if str(url).find('?') == -1:
-                url += "?"
+    def get(self, url, fid=None):
+        if str(url).find('links=true') == -1 and self._links is True:
+            if '?' in url:
+                url = '%s&links=true' % url
             else:
-                url += "&"
-            url += "links=true"
+                url = '%s?links=true' % url
         return self._send_recv('GET', url, payload=None, fid=fid)
     
     def post(self, url, payload=None, fid=None, file_content=None):
@@ -181,13 +184,19 @@ class IxnHttp(object):
             url = "/api/v1/sessions/%s/ixnetwork%s" % (self.current_session.id, url)
         if 'https' not in url:
             url = '%s%s' % (self._connection, url)
-        if '?' in url:
-            url = '%s&deprecated=true' % url
-        else:
-            url = '%s?deprecated=true' % url
+        if str(url).find('deprecated=true') == -1 and self._deprecated is True:
+            if '?' in url:
+                url = '%s&deprecated=true' % url
+            else:
+                url = '%s?deprecated=true' % url
         headers = self._headers.copy()
+
         if self.trace:
             print('%s %s %s' % (int(time.time()), method, url))
+
+        self._links = True
+        self._deprecated = True
+
         if payload is not None:
             headers['Content-Type'] = 'application/json'
             response = requests.request(method, url, data=json.dumps(payload), headers=headers, verify=self._verify_cert)
@@ -203,6 +212,9 @@ class IxnHttp(object):
             response = requests.request(method, url, data=json.dumps(file_content), headers=headers, verify=self._verify_cert)
         else:
             response = requests.request(method, url, data=None, headers=headers, verify=self._verify_cert)
+
+        if response.history is not None and len(response.history) > 0 and response.history[0].status_code == 307 and response.history[0].headers['Location'].startswith('https'):
+            self._connection = self._connection.replace('http://', 'https://')
 
         if str(response.status_code).startswith('2') is True:
             if response.headers.get('Content-Type'):
@@ -240,19 +252,3 @@ class IxnHttp(object):
             return data_object
         else:
             return contentObject
-
-    def _get_meta_data(self, href):
-        pieces = href.split('/')
-        meta_url = '/'.join(pieces[0:5])
-        for i in range(5, len(pieces)):
-            piece = pieces[i]
-            if len(piece) > 0 and piece.isdigit() is False:
-                meta_url = '%s/%s' % (meta_url, piece)
-        if meta_url in IxnHttp._meta_data:
-            meta_data = IxnHttp._meta_data[meta_url]
-        else:
-            meta_data = self.help(meta_url).custom
-            IxnHttp._meta_data[meta_url] = meta_data
-        return meta_data
-
-
