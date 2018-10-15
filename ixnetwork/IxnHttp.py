@@ -182,7 +182,8 @@ class IxnHttp(object):
     def _send_recv(self, method, url, payload=None, fid=None, file_content=None):
         if url.find('/api/v1/sessions') == -1 and self.current_session is not None:
             url = "/api/v1/sessions/%s/ixnetwork%s" % (self.current_session.id, url)
-        url = '%s%s' % (self._connection, url)
+        if 'https' not in url:
+            url = '%s%s' % (self._connection, url)
         if str(url).find('deprecated=true') == -1 and self._deprecated is True:
             if '?' in url:
                 url = '%s&deprecated=true' % url
@@ -192,7 +193,7 @@ class IxnHttp(object):
 
         if self.trace:
             print('%s %s %s' % (int(time.time()), method, url))
-        
+
         self._links = True
         self._deprecated = True
 
@@ -214,7 +215,7 @@ class IxnHttp(object):
 
         if response.history is not None and len(response.history) > 0 and response.history[0].status_code == 307 and response.history[0].headers['Location'].startswith('https'):
             self._connection = self._connection.replace('http://', 'https://')
-            
+
         if str(response.status_code).startswith('2') is True:
             if response.headers.get('Content-Type'):
                 if 'application/json' in response.headers['Content-Type']:
